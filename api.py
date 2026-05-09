@@ -137,10 +137,11 @@ def run_production_search(surname, forename, gender, target_years, event_type = 
                     print(f"(Found {total_pages} pages)", end=" ", flush=True)
                     # Loop starts from index 1 (Page 2) because we already have Page 1
                     for i in range(1, total_pages):
+                        print("CLICK ON PAGE", i)
                         with page.expect_response(lambda r: "indexes_search.asp" in r.url and r.status == 200) as p_resp:
                             pagination_locators.nth(i).click(force=True)
                         
-                        year_results.extend(parse_rows_from_html(p_resp.value.text(), year))
+                        year_results.extend(parse_rows_from_html(p_resp.value.text(), year, event_type))
                         page.wait_for_timeout(500)
 
                 print(f"Found {len(year_results)} records.")
@@ -172,14 +173,14 @@ def filter_by_birth_year(results, target_birth, window=2):
 
 # --- EXECUTION ---
 if __name__ == "__main__":
-    SURNAME_TO_FIND = "HANSFORD"
-    FORENAME_TO_FIND = "Donald"  # Blank for wide search
+    SURNAME_TO_FIND = "Salt"
+    FORENAME_TO_FIND = ""  # Blank for wide search
     GENDER_TO_FIND = "M"
     TARGET_BIRTH_YEAR = 1938
     event = "Death"
 
     # 1. Define Year Range
-    years_to_search = generate_years(1960, 2024)
+    years_to_search = generate_years(1874, 1874)
 
     # 2. Run the Main Search Engine
     raw_results = run_production_search(SURNAME_TO_FIND, FORENAME_TO_FIND, GENDER_TO_FIND, years_to_search, event_type=event)
